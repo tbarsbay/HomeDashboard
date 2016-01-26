@@ -2,8 +2,9 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="Generator" content="EditPlus®">
-        <meta name="Author" content="">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="Author" content="Tamer Barsbay">
         <meta name="Keywords" content="">
         <meta name="Description" content="">
 
@@ -11,33 +12,73 @@
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
         <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
+        <!-- Bootstrap -->
+        <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
         <!-- Use an HTML Import to bring in some elements. -->
         <link rel="import" href="bower_components/polymer/polymer.html">
+        <link rel="import" href="bower_components/iron-icons/iron-icons.html">
+        <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
         <link rel="import" href="bower_components/paper-styles/paper-styles.html" />
         <link rel="import" href="bower_components/paper-card/paper-card.html">
         <link rel="import" href="bower_components/paper-fab/paper-fab.html">
-        <link rel="import" href="bower_components/paper-button/paper-button.html">
-        <link rel="import" href="bower_components/paper-input/paper-input.html">
+        <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 
         <style is="custom-style">
-            paper-card {
-                width: 50%;
-                --paper-card-header-color: #2196F3;
+            paper-card.arrival-time {
+                width: 100%
+                --paper-card-header-color: #2196F3; 
+            }
+
+            paper-toolbar {
+                --paper-toolbar-background: #1565C0;    
+            }
+
+            paper-fab {
+                position: fixed;
+                bottom: 16px;
+                right: 16px;
             }
         </style>
 
         <title>Document</title>
     </head>
     <body fullbleed unresolved>
-        <div class=container>
-            <paper-card heading="{{ route1Name }} - {{ route1StopName }}">
-                <div class="card-content">{{ route1Arrivals }}</div>
-            </paper-card>
-            <br>
-            <br>
-            <paper-card heading="{{ route2Name }} - {{ route2StopName }}">
-                <div class="card-content">{{ route2Arrivals }}</div>
-            </paper-card>
-        </div>
+
+        <paper-toolbar>
+            <paper-icon-button icon="menu"></paper-icon-button>
+            <span class="title">Good Morning!</span>
+        </paper-toolbar>    
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <paper-card class="arrival-time" heading="{{ route1Name }} - {{ route1StopName }}">
+                        <div class="card-content">{{ route1Arrivals }}</div>
+                    </paper-card>
+                    <br>
+                    <br>
+                    <paper-card class="arrival-time" heading="{{ route2Name }} - {{ route2StopName }}">
+                        <div class="card-content">{{ route2Arrivals }}</div>
+                    </paper-card>
+                </div>
+                
+                <div class="col-md-6">
+                    <paper-card class="arrival-time" heading="{{ route1Name }} - {{ route1StopName }}">
+                        <div class="card-content">{{ route1Arrivals }}</div>
+                    </paper-card>
+                    <br>
+                    <br>
+                    <paper-card class="arrival-time" heading="{{ route2Name }} - {{ route2StopName }}">
+                        <div class="card-content">{{ route2Arrivals }}</div>
+                    </paper-card>
+                </div>
+            </div> <!-- /row 1 -->
+
+            <!-- Refresh screen -->
+            <a on-click="{{navigate}}">
+                <paper-fab icon="refresh"></paper-fab>
+            </a>
+        </div> <!-- /container -->
     </body>
 </html>
