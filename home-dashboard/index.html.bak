@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="Generator" content="EditPlus®">
+        <meta name="Author" content="">
+        <meta name="Keywords" content="">
+        <meta name="Description" content="">
+
+        <!-- Load webcomponents-lite.min.js for polyfill support. -->
+        <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+        <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+        <!-- Use an HTML Import to bring in some elements. -->
+        <link rel="import" href="bower_components/polymer/polymer.html">
+        <link rel="import" href="bower_components/paper-styles/paper-styles.html" />
+        <link rel="import" href="bower_components/paper-card/paper-card.html">
+        <link rel="import" href="bower_components/paper-fab/paper-fab.html">
+        <link rel="import" href="bower_components/paper-button/paper-button.html">
+        <link rel="import" href="bower_components/paper-input/paper-input.html">
+
+        <style is="custom-style">
+            paper-card {
+                width: 50%;
+                --paper-card-header-color: #2196F3;
+            }
+        </style>
+
+        <title>Document</title>
+    </head>
+    <body fullbleed unresolved>
+        <div class=container>
+            <paper-card heading="{{ route1Name }} : {{ route1StopName }}">
+                <div class="card-content">{{ route1Arrivals }}</div>
+            </paper-card>
+            <br>
+            <br>
+            <paper-card heading="{{ route2Name }} : {{ route2StopName }}">
+                <div class="card-content">{{ route2Arrivals }}</div>
+            </paper-card>
+        </div>
+    </body>
+</html>
