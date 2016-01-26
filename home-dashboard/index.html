@@ -18,14 +18,27 @@
         <!-- Use an HTML Import to bring in some elements. -->
         <link rel="import" href="bower_components/polymer/polymer.html">
         <link rel="import" href="bower_components/iron-icons/iron-icons.html">
+        <link rel="import" href="bower_components/iron-icons/maps-icons.html">
+        <link rel="import" href="bower_components/iron-icons/communication-icons.html">
+        <link rel="import" href="bower_components/iron-icons/social-icons.html">
         <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
         <link rel="import" href="bower_components/paper-styles/paper-styles.html" />
         <link rel="import" href="bower_components/paper-card/paper-card.html">
         <link rel="import" href="bower_components/paper-fab/paper-fab.html">
         <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 
+        <title>Home Dashboard</title>
+
         <style is="custom-style">
-            paper-card.arrival-time {
+            body {
+                background-color: #E3F2FD;
+            }
+
+            .page-header {
+                color: #2196F3;
+            }
+
+            paper-card {
                 width: 100%
                 --paper-card-header-color: #2196F3; 
             }
@@ -39,6 +52,53 @@
                 bottom: 16px;
                 right: 16px;
             }
+
+            iron-icon.icon-bus {
+                --iron-icon-fill-color: #616161;
+            }
+
+            iron-icon.icon-message {
+                --iron-icon-fill-color: #616161;
+            }
+
+            iron-icon.icon-person {
+                --iron-icon-fill-color: #616161;
+            }
+
+            .route-arrivals-header {
+                font-size: 14px;
+                background-color: #EEEEEE;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                padding-left: 4px;
+                padding-right: 4px;
+            }
+
+            .route-arrivals-times {
+                font-size: 20px;
+                padding-left: 32px;
+                padding-right: 8px;
+            }
+
+            .message-senderName {
+                font-size: 16px;
+                padding-left: 4px;
+                padding-right: 4px;
+            }
+
+            .message-text {
+                opacity: .87;
+                font-size: 16px;
+                padding-left: 32px;
+                padding-right: 4px;
+            }
+
+            .message-timestamp {
+                color: #9E9E9E;
+                font-size: 12px;
+                padding-left: 32px;
+                padding-right: 8px;
+            }
         </style>
 
         <title>Document</title>
@@ -47,30 +107,84 @@
 
         <paper-toolbar>
             <paper-icon-button icon="menu"></paper-icon-button>
-            <span class="title">Good Morning!</span>
         </paper-toolbar>    
 
         <div class="container">
+            <div class="page-header">
+                <h1>Good morning!</h1>
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
-                    <paper-card class="arrival-time" heading="{{ route1Name }} - {{ route1StopName }}">
-                        <div class="card-content">{{ route1Arrivals }}</div>
-                    </paper-card>
-                    <br>
-                    <br>
-                    <paper-card class="arrival-time" heading="{{ route2Name }} - {{ route2StopName }}">
-                        <div class="card-content">{{ route2Arrivals }}</div>
+                    <paper-card class="arrival-time" heading="Transit">
+                        <div class="card-content">
+                            <div>
+                                <iron-icon class="icon-bus" icon="maps:directions-bus"></iron-icon>
+                                <span class="route-arrivals-header">
+                                    <b>{{ route1Name }} - {{ route1StopName }}</b>
+                                </span>
+                                <br>
+                                <span class="route-arrivals-times">
+                                    {{ route1Arrivals }}
+                                </span>
+                            </div>
+                            <br>
+                            <div>
+                                <iron-icon class="icon-bus" icon="maps:directions-bus"></iron-icon>
+                                <span class="route-arrivals-header">
+                                    <b>{{ route2Name }} - {{ route2StopName }}</b>
+                                </span>
+                                <br>
+                                <span class="route-arrivals-times">
+                                    {{ route2Arrivals }}
+                                </span>
+                            </div>
+                        </div>
                     </paper-card>
                 </div>
                 
                 <div class="col-md-6">
-                    <paper-card class="arrival-time" heading="{{ route1Name }} - {{ route1StopName }}">
-                        <div class="card-content">{{ route1Arrivals }}</div>
+                    <paper-card class="weather" heading="Weather">
+                        <div class="card-content"></div>
                     </paper-card>
                     <br>
                     <br>
-                    <paper-card class="arrival-time" heading="{{ route2Name }} - {{ route2StopName }}">
-                        <div class="card-content">{{ route2Arrivals }}</div>
+                    <paper-card class="custom-message" heading="Messages">
+                        <div class="card-content">
+                            <iron-icon class="icon-message" icon="communication:message"></iron-icon>
+                            <span class="message-senderName">
+                                <b>From:</b> {{ messageSenderName }}
+                            </span>
+
+                            <br>
+
+                            <span class="message-text">
+                                {{ messageText }}
+                            </span>
+
+                            <br>
+
+                            <span class="message-timestamp">
+                                <i>{{ messageTimestamp }}</i>
+                            </span>
+                            <hr>
+                            <iron-icon class="icon-message" icon="communication:message"></iron-icon>
+                            <span class="message-senderName">
+                                <b>From:</b> {{ messageSenderName }}
+                            </span>
+
+                            <br>
+
+                            <span class="message-text">
+                                Good morning!
+                            </span>
+
+                            <br>
+
+                            <span class="message-timestamp">
+                                <i>7:20am</i>
+                            </span>
+                        </div>
                     </paper-card>
                 </div>
             </div> <!-- /row 1 -->

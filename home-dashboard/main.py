@@ -44,6 +44,10 @@ class DashboardHandler(webapp2.RequestHandler):
             values['route2Dir'] = route48.direction
             values['route2StopName'] = route48.stopName
             values['route2Arrivals'] = route48.arrivals
+
+            values['messageText'] = "Hope you have a great day at work! Don't forget your lunch!"
+            values['messageSenderName'] = "Tamer"
+            values['messageTimestamp'] = "7:26am"
         self.response.out.write(template.render("index.html", values))
 
     def post(self):

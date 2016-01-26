@@ -44,6 +44,9 @@ class DashboardHandler(webapp2.RequestHandler):
             values['route2Dir'] = route48.direction
             values['route2StopName'] = route48.stopName
             values['route2Arrivals'] = route48.arrivals
+
+            values['customMessage'] = "Hope you have a great day at work! Don't forget your lunch!"
+            values['customMessageSenderName'] = "Tamer"
         self.response.out.write(template.render("index.html", values))
 
     def post(self):
@@ -55,7 +58,7 @@ class RouteArrivals:
     name = ""
     direction = ""
     stopName = ""
-    arrivals = []
+    arrivals = ""
 
     def __init__(self, name, direction, stopName, arrivals):
         self.name = name
@@ -92,7 +95,8 @@ def buildRouteArrivalsObject(selectedRoute):
     routeName = routeName[:routeName.index('-')]
     routeDir = routeXml.getElementsByTagName('RouteDirection')[0].getAttribute('Name')
     stopName = routeXml.getElementsByTagName('Stop')[0].getAttribute('name')
-    arrivals = [str(arrivalTime.childNodes[0].nodeValue) for arrivalTime in routeXml.getElementsByTagName("DepartureTime")]
+    arrivals = [str(arrivalTime.childNodes[0].nodeValue) + "m" for arrivalTime in routeXml.getElementsByTagName("DepartureTime")]
+    arrivals = ", ".join(arrivals)
     return RouteArrivals(routeName, routeDir, stopName, arrivals)
 
 def buildMuniArrivalsEndpoint(stopCode):
