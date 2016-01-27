@@ -101,9 +101,51 @@
             }
         </style>
 
-        <title>Document</title>
+        <script>
+            String.prototype.format = function()
+            {
+               var content = this;
+               for (var i=0; i < arguments.length; i++)
+               {
+                    var replacement = '{' + i + '}';
+                    content = content.replace(replacement, arguments[i]);  
+               }
+               return content;
+            };
+
+            var routeArrivalsTemplate = "<div><iron-icon class=\"icon-bus\" icon=\"maps:directions-bus\"></iron-icon><span class=\"route-arrivals-header\"><b>{0} - {1}</b></span><br><span class=\"route-arrivals-times\">{2}</span></div>";
+
+            function initialize() {
+                loadArrivalTimes();
+            }
+            
+            function refresh() {
+                loadArrivalTimes();
+            }
+
+            function loadArrivalTimes() {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                        var arrivalsArray = JSON.parse(xmlhttp.responseText);
+                        renderArrivals(arrivalsArray);
+                    }
+                };
+                xmlhttp.open("GET", "/arrivals", true);
+                xmlhttp.send();
+            }
+
+            function renderArrivals(arrivals) {
+                var out = "";
+                var i;
+                for (i = 0; i < arrivals.length; i++) {
+                    out += routeArrivalsTemplate.format(arrivals[i].routeName, arrivals[i].stopName, arrivals[i].arrivals) + '<br>';
+                }
+                document.getElementById("arrival-card-content").innerHTML = out;
+            }
+        </script>
     </head>
-    <body fullbleed unresolved>
+    <body fullbleed unresolved onload="initialize()">
 
         <paper-toolbar>
             <paper-icon-button icon="menu"></paper-icon-button>
@@ -117,7 +159,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <paper-card class="arrival-time" heading="Transit">
-                        <div class="card-content">
+                        <div class="card-content" id="arrival-card-content">
                             <div>
                                 <iron-icon class="icon-bus" icon="maps:directions-bus"></iron-icon>
                                 <span class="route-arrivals-header">
@@ -190,9 +232,7 @@
             </div> <!-- /row 1 -->
 
             <!-- Refresh screen -->
-            <a on-click="{{navigate}}">
-                <paper-fab icon="refresh"></paper-fab>
-            </a>
+            <paper-fab icon="refresh" onclick="refresh()"></paper-fab>
         </div> <!-- /container -->
     </body>
 </html>

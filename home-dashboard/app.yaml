@@ -12,6 +12,9 @@ handlers:
 - url: /bower_components
   static_dir: bower_components
 
+- url: /icons
+  static_dir: icons
+
 - url: .*
   script: main.app
 

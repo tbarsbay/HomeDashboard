@@ -9,11 +9,11 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
-- url: .*
-  script: main.app
-
 - url: /bower_components
   static_dir: bower_components
+
+- url: .*
+  script: main.app
 
 libraries:
 - name: webapp2
