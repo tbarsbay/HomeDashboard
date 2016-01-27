@@ -27,6 +27,7 @@
         <link rel="import" href="bower_components/paper-fab/paper-fab.html">
         <link rel="import" href="bower_components/paper-progress/paper-progress.html">
         <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+        <link rel="import" href="bower_components/google-signin/google-signin.html">
 
         <title>Home Dashboard</title>
 
@@ -56,6 +57,7 @@
 
             paper-progress {
                 width: 100%
+                --paper-progress-active-color: #2196F3;
             }
 
             iron-icon.icon-bus {
@@ -171,6 +173,8 @@
         <div class="container">
             <div class="page-header">
                 <h1>Good morning!</h1>
+                <br>
+                <google-signin width="iconOnly" client-id="602698472379-aiulm54afilofccvcantfc4ka46qnlpa.apps.googleusercontent.com" scopes="https://www.googleapis.com/auth/calendar.readonly"></google-signin>
             </div>
 
             <div class="row">

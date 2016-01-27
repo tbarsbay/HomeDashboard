@@ -27,10 +27,6 @@ route48Name = "48-Quintara 24th Street"
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello world!')
-
-class DashboardHandler(webapp2.RequestHandler):
-    def get(self):
         values = {}
         self.response.out.write(template.render("index.html", values))
 
@@ -53,7 +49,6 @@ class ArrivalsHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/dashboard', DashboardHandler),
     ('/arrivals', ArrivalsHandler)
 ], debug=True)    
 

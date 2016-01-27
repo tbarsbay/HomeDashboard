@@ -24,6 +24,8 @@
     "paper-item": "PolymerElements/paper-item#^1.0.0",
     "paper-toast": "PolymerElements/paper-toast#^1.0.0",
     "paper-toolbar": "PolymerElements/paper-toolbar#^1.0.0",
-    "paper-elements": "PolymerElements/paper-elements#~1.0.7"
+    "paper-elements": "PolymerElements/paper-elements#~1.0.7",
+    "google-calendar": "GoogleWebComponents/google-calendar#1.0.0",
+    "google-signin": "GoogleWebComponents/google-signin#1.0.0"
   }
 }

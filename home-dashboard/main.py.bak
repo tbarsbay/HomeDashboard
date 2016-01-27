@@ -42,11 +42,13 @@ class DashboardHandler(webapp2.RequestHandler):
 class ArrivalsHandler(webapp2.RequestHandler):
     def get(self):
         # make it so that get request takes in params for all the routes wanted, and then builds response from there
-        route10json = getArrivalsJsonByStopAndRoute("16199", route10Name)
-        route48json = getArrivalsJsonByStopAndRoute("16199", route48Name)
+        route10InboundJson = getArrivalsJsonByStopAndRoute("16199", route10Name)
+        route48InboundJson = getArrivalsJsonByStopAndRoute("16199", route48Name)
+        route48OutboundJson = getArrivalsJsonByStopAndRoute("15228", route48Name)
         response = []
-        response.append(route10json)
-        response.append(route48json)
+        response.append(route10InboundJson)
+        response.append(route48InboundJson)
+        response.append(route48OutboundJson)
         self.response.out.write(json.dumps(response))
 
 app = webapp2.WSGIApplication([
