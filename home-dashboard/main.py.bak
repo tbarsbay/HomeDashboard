@@ -21,10 +21,9 @@ from xml.dom import minidom
 from google.appengine.ext.webapp import template
 
 muniAuthToken = "4eaad5aa-05b7-477e-b75b-c57e78c89d57"
+route10Name = "10-Townsend"
 route19Name = "19-Polk"
-route19ShortName = "19"
 route48Name = "48-Quintara 24th Street"
-route48ShortName = "48"
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -32,8 +31,6 @@ class MainHandler(webapp2.RequestHandler):
 
 class DashboardHandler(webapp2.RequestHandler):
     def get(self):
-        #route19 = buildRouteArrivalsJson(route19Name)
-        #route48 = buildRouteArrivalsJson(route48Name)
         values = {}
         self.response.out.write(template.render("index.html", values))
 
@@ -45,10 +42,10 @@ class DashboardHandler(webapp2.RequestHandler):
 class ArrivalsHandler(webapp2.RequestHandler):
     def get(self):
         # make it so that get request takes in params for all the routes wanted, and then builds response from there
-        route19json = buildRouteArrivalsJson(route19Name)
-        route48json = buildRouteArrivalsJson(route48Name)
+        route10json = getArrivalsJsonByStopAndRoute("16199", route10Name)
+        route48json = getArrivalsJsonByStopAndRoute("16199", route48Name)
         response = []
-        response.append(route19json)
+        response.append(route10json)
         response.append(route48json)
         self.response.out.write(json.dumps(response))
 
@@ -56,28 +53,20 @@ app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/dashboard', DashboardHandler),
     ('/arrivals', ArrivalsHandler)
-], debug=True)
+], debug=True)    
 
-def getArrivalTimes(route):
-    selectedRouteXml = getRouteXml(route)
-    if (selectedRouteXml):
-        # Found the xml for our specified route
-        arrivalTimesXml = selectedRouteXml.getElementsByTagName("DepartureTime")
-        arrivalTimes = [str(arrivalTime.childNodes[0].nodeValue) for arrivalTime in arrivalTimesXml]
-        return arrivalTimes
-
-def getBaseXml():
-    url = buildMuniArrivalsEndpoint("16199") #TODO need to parametrize stopCode
+def getArrivalsXmlByStop(stopCode):
+    url = buildMuniArrivalsEndpoint(stopCode)
     return minidom.parse(urllib2.urlopen(url))
 
-def getRouteXml(selectedRoute):
-    allRoutesXml = getBaseXml().getElementsByTagName("Route")
+def getArrivalsXmlByStopAndRoute(stopCode, selectedRoute):
+    allRoutesXml = getArrivalsXmlByStop(stopCode).getElementsByTagName("Route")
     for route in allRoutesXml:
         if route.getAttribute('Name') == selectedRoute:
             return route
 
-def buildRouteArrivalsJson(selectedRoute):
-    routeXml = getRouteXml(selectedRoute)
+def getArrivalsJsonByStopAndRoute(stopCode, selectedRoute):
+    routeXml = getArrivalsXmlByStopAndRoute(stopCode, selectedRoute)
     routeName = routeXml.getAttribute('Name')
     routeName = routeName[:routeName.index('-')]
     routeDir = routeXml.getElementsByTagName('RouteDirection')[0].getAttribute('Name')
