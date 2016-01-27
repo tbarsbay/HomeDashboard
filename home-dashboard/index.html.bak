@@ -25,6 +25,7 @@
         <link rel="import" href="bower_components/paper-styles/paper-styles.html" />
         <link rel="import" href="bower_components/paper-card/paper-card.html">
         <link rel="import" href="bower_components/paper-fab/paper-fab.html">
+        <link rel="import" href="bower_components/paper-progress/paper-progress.html">
         <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 
         <title>Home Dashboard</title>
@@ -102,6 +103,8 @@
         </style>
 
         <script>
+            var progress;
+
             String.prototype.format = function()
             {
                var content = this;
@@ -120,7 +123,12 @@
             }
             
             function refresh() {
+                showLoadingViews();
                 loadArrivalTimes();
+            }
+
+            function showLoadingViews() {
+                document.getElementById("arrival-card-content").innerHTML = "<paper-progress indeterminate id=\"arrival-card-progress\"></paper-progress>";
             }
 
             function loadArrivalTimes() {
@@ -143,9 +151,12 @@
                 }
                 document.getElementById("arrival-card-content").innerHTML = out;
             }
-        </script>
 
-        <title>Document</title>
+            
+            window.addEventListener('WebComponentsReady', function() {
+              progress = document.querySelector('paper-progress');
+            });
+        </script>
     </head>
     <body fullbleed unresolved onload="initialize()">
 
@@ -162,27 +173,7 @@
                 <div class="col-md-6">
                     <paper-card class="arrival-time" heading="Transit">
                         <div class="card-content" id="arrival-card-content">
-                            <div>
-                                <iron-icon class="icon-bus" icon="maps:directions-bus"></iron-icon>
-                                <span class="route-arrivals-header">
-                                    <b>{{ route1Name }} - {{ route1StopName }}</b>
-                                </span>
-                                <br>
-                                <span class="route-arrivals-times">
-                                    {{ route1Arrivals }}
-                                </span>
-                            </div>
-                            <br>
-                            <div>
-                                <iron-icon class="icon-bus" icon="maps:directions-bus"></iron-icon>
-                                <span class="route-arrivals-header">
-                                    <b>{{ route2Name }} - {{ route2StopName }}</b>
-                                </span>
-                                <br>
-                                <span class="route-arrivals-times">
-                                    {{ route2Arrivals }}
-                                </span>
-                            </div>
+                            <paper-progress indeterminate id="arrival-card-progress"></paper-progress>
                         </div>
                     </paper-card>
                 </div>
