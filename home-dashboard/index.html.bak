@@ -27,7 +27,8 @@
         <link rel="import" href="bower_components/paper-fab/paper-fab.html">
         <link rel="import" href="bower_components/paper-progress/paper-progress.html">
         <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
-        <link rel="import" href="bower_components/google-signin.html">
+        <link rel="import" href="bower_components/google-signin/google-signin.html">
+        <link rel="import" href="bower_components/google-signin/google-signin-aware.html">
 
         <title>Home Dashboard</title>
 
@@ -157,7 +158,6 @@
                 }
                 document.getElementById("arrival-card-content").innerHTML = out;
             }
-
             
             window.addEventListener('WebComponentsReady', function() {
               progress = document.querySelector('paper-progress');
@@ -174,7 +174,6 @@
             <div class="page-header">
                 <h1>Good morning!</h1>
                 <br>
-                <google-signin width="iconOnly" client-id="602698472379-aiulm54afilofccvcantfc4ka46qnlpa.apps.googleusercontent.com" scopes="https://www.googleapis.com/auth/calendar.readonly"></google-signin>
             </div>
 
             <div class="row">
@@ -192,41 +191,90 @@
                     </paper-card>
                     <br>
                     <br>
-                    <paper-card class="custom-message" heading="Messages">
+                    <paper-card class="schedule" heading="Schedule">
                         <div class="card-content">
-                            <iron-icon class="icon-message" icon="communication:message"></iron-icon>
-                            <span class="message-senderName">
-                                <b>From:</b> {{ messageSenderName }}
-                            </span>
+                            <div id="schedule-card-content">
+                                
+                            </div>
+                            <google-signin width="iconOnly" client-id="602698472379-aiulm54afilofccvcantfc4ka46qnlpa.apps.googleusercontent.com" scopes="https://www.googleapis.com/auth/calendar.readonly"></google-signin>
+                            <template id="awareness" is="dom-bind">
+                                <google-signin-aware
+                                    id="aware"
+                                    client-id="602698472379-aiulm54afilofccvcantfc4ka46qnlpa.apps.googleusercontent.com"
+                                    scopes="https://www.googleapis.com/auth/calendar.readonly"
+                                    offline
+                                    on-google-signin-aware-success="handleSignIn"
+                                    on-google-signin-offline-success="handleOffline"></google-signin-aware>
+                            </template>
+                            
+                            <script>
+                                var aware = document.querySelector('#awareness');
+                                aware.status = 'Not granted';
+                                aware.handleSignIn = function(response) {
+                                    this.status = 'Signed in'
+                                    var user = gapi.auth2.getAuthInstance().currentUser.get();
+                                    console.log('User name: ' + user.getBasicProfile().getName());
 
-                            <br>
+                                    loadCalendarApi();
+                                };
+                                aware.handleOffline = function(response) {
+                                    console.log('Offline code received: ' + response.detail.code);
+                                    // Here you would POST response.detail.code to your webserver, which can
+                                    // exchange the authorization code for an access token. More info at:
+                                    // https://developers.google.com/identity/protocols/OAuth2WebServer
+                                };
+                                aware.handleSignOut = function(response) {
+                                    this.status = 'Signed out'
+                                    console.log('[Aware] Signout Response', response);
+                                };
 
-                            <span class="message-text">
-                                {{ messageText }}
-                            </span>
+                                function loadCalendarApi() {
+                                    gapi.client.load('calendar', 'v3', loadSchedule);
+                                }
 
-                            <br>
+                                function loadSchedule() {
+                                    var request = gapi.client.calendar.events.list({
+                                        'calendarId': 'primary',
+                                        'timeMin': '2016-01-27T8:00:00-08:00',
+                                        'timeMax': '2016-01-27T23:00:00-08:00', // make automatically select today's date
+                                        'showDeleted': 'false',
+                                        'singleEvents': 'true',
+                                        'orderBy': 'startTime'
+                                    });
 
-                            <span class="message-timestamp">
-                                <i>{{ messageTimestamp }}</i>
-                            </span>
-                            <hr>
-                            <iron-icon class="icon-message" icon="communication:message"></iron-icon>
-                            <span class="message-senderName">
-                                <b>From:</b> {{ messageSenderName }}
-                            </span>
+                                    request.execute(function(resp) {
+                                        var events = resp.items;
+                                        if (events.length > 1) {
+                                            var firstEvent = events[0];
+                                            var whenFirstStarts = firstEvent.start.dateTime;
+                                            if (!whenFirstStarts) {
+                                                whenFirstStarts = firstEvent.start.date;
+                                            }
+                                            console.log("First event starts at: " + whenFirstStarts);
 
-                            <br>
-
-                            <span class="message-text">
-                                Good morning!
-                            </span>
-
-                            <br>
-
-                            <span class="message-timestamp">
-                                <i>7:20am</i>
-                            </span>
+                                            var lastEvent = events[events.length-1]
+                                            var whenLastEnds = lastEvent.end.dateTime;
+                                            if (!whenLastEnds) {
+                                                whenLastEnds = lastEvent.end.date;
+                                            }
+                                            console.log("Last event ends at: " + whenLastEnds);
+                                        } else if (events.length == 1) {
+                                            // Only one event today
+                                            var onlyEvent = events[0];
+                                            var whenEventStarts = onlyEvent.start.dateTime;
+                                            if (!whenFirstStarts) {
+                                                whenFirstStarts = onlyEvent.start.date;
+                                            }
+                                            var whenEventEnds = onlyEvent.end.dateTime;
+                                            if (!whenEventEnds) {
+                                                whenEventEnds = onlyEvent.end.date;
+                                            }
+                                            console.log("Only event starts at: " + whenEventStarts);
+                                            console.log("Only event ends at: " + whenEventEnds);
+                                        }
+                                    });
+                                }
+                            </script>
                         </div>
                     </paper-card>
                 </div>
