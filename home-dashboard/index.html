@@ -61,16 +61,12 @@
                 --paper-progress-active-color: #2196F3;
             }
 
-            iron-icon.icon-bus {
+            iron-icon {
                 --iron-icon-fill-color: #616161;
             }
 
-            iron-icon.icon-message {
-                --iron-icon-fill-color: #616161;
-            }
-
-            iron-icon.icon-person {
-                --iron-icon-fill-color: #616161;
+            .schedule-first-last-event {
+                width: 50%;
             }
 
             .route-arrivals-header {
@@ -106,6 +102,16 @@
                 font-size: 12px;
                 padding-left: 32px;
                 padding-right: 8px;
+            }
+
+            .schedule-event-header {
+                font-size: 16px;
+                padding-left: 4px;
+                padding-right: 8px;
+            }
+
+            .schedule-event-body {
+                font-size: 16px;
             }
         </style>
 
@@ -191,12 +197,11 @@
                     </paper-card>
                     <br>
                     <br>
-                    <paper-card class="schedule" heading="Schedule">
+                    <paper-card class="schedule" heading="Today's Schedule">
                         <div class="card-content">
                             <div id="schedule-card-content">
-                                
                             </div>
-                            <google-signin width="iconOnly" client-id="602698472379-aiulm54afilofccvcantfc4ka46qnlpa.apps.googleusercontent.com" scopes="https://www.googleapis.com/auth/calendar.readonly"></google-signin>
+                            <google-signin id="google-signin-button" width="iconOnly" client-id="602698472379-aiulm54afilofccvcantfc4ka46qnlpa.apps.googleusercontent.com" scopes="https://www.googleapis.com/auth/calendar.readonly"></google-signin>
                             <template id="awareness" is="dom-bind">
                                 <google-signin-aware
                                     id="aware"
@@ -208,13 +213,18 @@
                             </template>
                             
                             <script>
+                                var layoutFirstLastEvents = "<div class=\"schedule-first-last-event\"><iron-icon class=\"icon-event\" icon=\"event\"></iron-icon><span class=\"schedule-event-header\"><b>First Meeting</b></span><br><span class=\"schedule-event-body\">{0}<br><i>{1} - {2}</i></span></div><br><div class=\"schedule-first-last-event\"><iron-icon class=\"icon-event\" icon=\"event\"></iron-icon><span class=\"schedule-event-header\"><b>Last Meeting</b></span><br><span class=\"schedule-event-body\">{3}<br><i>{4} - {5}</i></span></div>";
+                                var layoutOnlyOneEvent = "<div class=\"schedule-only-one-event\"><iron icon=\"icon-event\" icon=\"event\"></iron-icon><span class=\"schedule-event-header\"><b>Only Meeting</b></span><br><span class=\"schedule-event-body\">{0}<br><i>{1} - {2}</i></span></div>";
+                                var layoutNoEvents = "No events"; //TODO temp
+
                                 var aware = document.querySelector('#awareness');
                                 aware.status = 'Not granted';
                                 aware.handleSignIn = function(response) {
                                     this.status = 'Signed in'
                                     var user = gapi.auth2.getAuthInstance().currentUser.get();
                                     console.log('User name: ' + user.getBasicProfile().getName());
-
+                                    
+                                    document.getElementById("google-signin-button").style.visibility = 'hidden';
                                     //loadCalendarApi();
                                 };
                                 aware.handleOffline = function(response) {
@@ -226,10 +236,20 @@
                                 aware.handleSignOut = function(response) {
                                     this.status = 'Signed out'
                                     console.log('[Aware] Signout Response', response);
+                                    document.getElementById("google-signin-button").style.visibility = 'visible';
                                 };
 
                                 function loadCalendarApi() {
                                     gapi.client.load('calendar', 'v3', loadSchedule);
+                                }
+
+                                function convertDateToHoursMinutesString(date) {
+                                    var hours = date.getHours();
+                                    var minutes = date.getMinutes();
+                                    if (minutes == '0') {
+                                        minutes = '00';
+                                    }
+                                    return hours + ':' + minutes;
                                 }
 
                                 function loadSchedule() {
@@ -246,36 +266,63 @@
                                         var events = resp.items;
                                         if (events.length > 1) {
                                             var firstEvent = events[0];
-                                            var whenFirstStarts = firstEvent.start.dateTime;
-                                            if (!whenFirstStarts) {
-                                                whenFirstStarts = firstEvent.start.date;
+                                            var firstStart = firstEvent.start.dateTime;
+                                            var firstEnd = firstEvent.end.dateTime;
+                                            if (!firstStart || !firstEnd) {
+                                                firstStart = firstEvent.start.date;
+                                                firstEnd = firstEvent.end.date;
                                             }
-                                            console.log("First event starts at: " + whenFirstStarts);
+                                            console.log("First event starts at: " + firstStart);
 
                                             var lastEvent = events[events.length-1]
-                                            var whenLastEnds = lastEvent.end.dateTime;
-                                            if (!whenLastEnds) {
-                                                whenLastEnds = lastEvent.end.date;
+                                            var lastStart = lastEvent.start.dateTime;
+                                            var lastEnd = lastEvent.end.dateTime;
+                                            if (!lastStart || !lastEnd) {
+                                                lastStart = lastEvent.start.date;
+                                                lastEnd = lastEvent.end.date;
                                             }
-                                            console.log("Last event ends at: " + whenLastEnds);
+                                            console.log("Last event ends at: " + lastEnd);
+
+                                            var firstStartDate = new Date(firstStart.toLocaleString());
+                                            var firstEndDate = new Date(firstEnd.toLocaleString());
+                                            var lastStartDate = new Date(lastStart.toLocaleString());
+                                            var lastEndDate = new Date(lastEnd.toLocaleString());
+                                            
+                                            var firstStartString = convertDateToHoursMinutesString(firstStartDate);
+                                            var firstEndString = convertDateToHoursMinutesString(firstEndDate);
+                                            var lastStartString = convertDateToHoursMinutesString(lastStartDate);
+                                            var lastEndString = convertDateToHoursMinutesString(lastEndDate);
+
+                                            // Update the UI with both events
+                                            document.getElementById("schedule-card-content").innerHTML = layoutFirstLastEvents.format(firstEvent.summary, firstStartString, firstEndString, lastEvent.summary, lastStartString, lastEndString);
                                         } else if (events.length == 1) {
                                             // Only one event today
                                             var onlyEvent = events[0];
-                                            var whenEventStarts = onlyEvent.start.dateTime;
-                                            if (!whenFirstStarts) {
-                                                whenFirstStarts = onlyEvent.start.date;
+                                            var eventStart = onlyEvent.start.dateTime;
+                                            if (!eventStart) {
+                                                eventStart = onlyEvent.start.date;
                                             }
-                                            var whenEventEnds = onlyEvent.end.dateTime;
-                                            if (!whenEventEnds) {
-                                                whenEventEnds = onlyEvent.end.date;
+                                            var eventEnd = onlyEvent.end.dateTime;
+                                            if (!eventEnd) {
+                                                eventEnd = onlyEvent.end.date;
                                             }
-                                            console.log("Only event starts at: " + whenEventStarts);
-                                            console.log("Only event ends at: " + whenEventEnds);
+
+                                            console.log("Only event starts at: " + eventStart);
+                                            console.log("Only event ends at: " + eventEnd);
+
+                                            // Update the UI with the event
+                                            document.getElementById("schedule-card-content").innerHTML = layoutOnlyOneEvent.format(onlyEvent.summary, new Date(eventStart.toLocaleString()), new Date(eventEnd.toLocaleString()));
+                                        } else {
+                                            // No events
+                                            console.log("No events!");
+
+                                            // Update the UI with no events
+                                            document.getElementById("schedule-card-content").innerHTML = layoutNoEvents;
                                         }
                                     });
                                 }
                             </script>
-                            <script src="https://apis.google.com/js/client.js?onload=loadCalendarApi"></script>
+                            <script src="https://apis.google.com/js/client.js?onload=loadCalendarApi"></script> <!-- check auth -->
                         </div>
                     </paper-card>
                 </div>
