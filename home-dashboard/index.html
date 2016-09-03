@@ -43,11 +43,11 @@
 
             paper-card {
                 width: 100%
-                --paper-card-header-color: #2196F3; 
+                --paper-card-header-color: #2196F3;
             }
 
             paper-toolbar {
-                --paper-toolbar-background: #1565C0;    
+                --paper-toolbar-background: #1565C0;
             }
 
             paper-fab {
@@ -71,7 +71,7 @@
 
             .route-arrivals-header {
                 font-size: 14px;
-                background-color: #EEEEEE;
+                background-color: #000000;
                 padding-top: 4px;
                 padding-bottom: 4px;
                 padding-left: 4px;
@@ -124,7 +124,7 @@
                for (var i=0; i < arguments.length; i++)
                {
                     var replacement = '{' + i + '}';
-                    content = content.replace(replacement, arguments[i]);  
+                    content = content.replace(replacement, arguments[i]);
                }
                return content;
             };
@@ -134,7 +134,7 @@
             function initialize() {
                 loadArrivalTimes();
             }
-            
+
             function refresh() {
                 showLoadingViews();
                 loadArrivalTimes();
@@ -164,7 +164,7 @@
                 }
                 document.getElementById("arrival-card-content").innerHTML = out;
             }
-            
+
             window.addEventListener('WebComponentsReady', function() {
               progress = document.querySelector('paper-progress');
             });
@@ -174,7 +174,7 @@
 
         <paper-toolbar>
             <paper-icon-button icon="menu"></paper-icon-button>
-        </paper-toolbar>    
+        </paper-toolbar>
 
         <div class="container">
             <div class="page-header">
@@ -190,7 +190,7 @@
                         </div>
                     </paper-card>
                 </div>
-                
+
                 <div class="col-md-6">
                     <paper-card class="weather" heading="Weather">
                         <div class="card-content"></div>
@@ -211,7 +211,7 @@
                                     on-google-signin-aware-success="handleSignIn"
                                     on-google-signin-offline-success="handleOffline"></google-signin-aware>
                             </template>
-                            
+
                             <script>
                                 var layoutFirstLastEvents = "<div class=\"schedule-first-last-event\"><iron-icon class=\"icon-event\" icon=\"event\"></iron-icon><span class=\"schedule-event-header\"><b>First Meeting</b></span><br><span class=\"schedule-event-body\">{0}<br><i>{1} - {2}</i></span></div><br><div class=\"schedule-first-last-event\"><iron-icon class=\"icon-event\" icon=\"event\"></iron-icon><span class=\"schedule-event-header\"><b>Last Meeting</b></span><br><span class=\"schedule-event-body\">{3}<br><i>{4} - {5}</i></span></div>";
                                 var layoutOnlyOneEvent = "<div class=\"schedule-only-one-event\"><iron icon=\"icon-event\" icon=\"event\"></iron-icon><span class=\"schedule-event-header\"><b>Only Meeting</b></span><br><span class=\"schedule-event-body\">{0}<br><i>{1} - {2}</i></span></div>";
@@ -223,7 +223,7 @@
                                     this.status = 'Signed in'
                                     var user = gapi.auth2.getAuthInstance().currentUser.get();
                                     console.log('User name: ' + user.getBasicProfile().getName());
-                                    
+
                                     document.getElementById("google-signin-button").style.visibility = 'hidden';
                                     //loadCalendarApi();
                                 };
@@ -287,7 +287,7 @@
                                             var firstEndDate = new Date(firstEnd.toLocaleString());
                                             var lastStartDate = new Date(lastStart.toLocaleString());
                                             var lastEndDate = new Date(lastEnd.toLocaleString());
-                                            
+
                                             var firstStartString = convertDateToHoursMinutesString(firstStartDate);
                                             var firstEndString = convertDateToHoursMinutesString(firstEndDate);
                                             var lastStartString = convertDateToHoursMinutesString(lastStartDate);
