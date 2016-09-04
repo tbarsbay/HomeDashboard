@@ -25,6 +25,15 @@ route10Name = "10-Townsend"
 route19Name = "19-Polk"
 route48Name = "48-Quintara 24th Street"
 
+trelloApiKey = "5c8418656e2cf0ff016be1ef98fee2ae"
+trelloPersonalBoardId = "ayldRlvY"
+trelloListId = "55e5140b0ab26cbcb8ed4e67"
+trelloToken = "10e0945667de140dc0681e748bf52d253c549704e8290901982e7f7c1e1d53de"
+trelloBoardFields = "name"
+trelloCardFields = "name,labels,due,idChecklists"
+trelloBaseListsUrl = "https://api.trello.com/1/lists/"
+trelloFullUrl = trelloBaseListsUrl + trelloListId + "?fields=" + trelloBoardFields + "&cards=open" + "&card_fields=" + trelloCardFields + "&key=" + trelloApiKey + "&token=" + trelloToken
+
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         values = {}
@@ -35,60 +44,24 @@ class MainHandler(webapp2.RequestHandler):
         values = {'customMessage': customMessage}
         self.response.out.write(template.render("index.html", values))
 
-class ArrivalsHandler(webapp2.RequestHandler):
-    def get(self):
-        # make it so that get request takes in params for all the routes wanted, and then builds response from there
-        route10InboundJson = getArrivalsJsonByStopAndRoute("16199", route10Name)
-        route48InboundJson = getArrivalsJsonByStopAndRoute("16199", route48Name)
-        route48OutboundJson = getArrivalsJsonByStopAndRoute("15228", route48Name)
-        response = []
-        response.append(route10InboundJson)
-        response.append(route48InboundJson)
-        response.append(route48OutboundJson)
-        self.response.out.write(json.dumps(response))
-
 class WeatherHandler(webapp2.RequestHandler):
     def get(self):
         self.response.out.write(getCurrentAtlantaWeatherJson())
 
+class TrelloHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(getTrelloListJson())
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/arrivals', ArrivalsHandler),
-    ('/weather', WeatherHandler)
+    # ('/arrivals', ArrivalsHandler),
+    ('/weather', WeatherHandler),
+    ('/trello', TrelloHandler)
 ], debug=True)
 
 def getCurrentAtlantaWeatherJson():
     url = "http://api.openweathermap.org/data/2.5/weather?id=4180439&APPID=7a7167bed31c6a147d7dd7de26c20fe8"
-    # return json.loads(urllib2.urlopen(url).read())
     return urllib2.urlopen(url).read();
 
-def getCurrentAtlantaWeatherIcon():
-    iconUrl = "http://openweathermap.org/img/w/"
-
-def getArrivalsXmlByStop(stopCode):
-    url = buildMuniArrivalsEndpoint(stopCode)
-    return minidom.parse(urllib2.urlopen(url))
-
-def getArrivalsXmlByStopAndRoute(stopCode, selectedRoute):
-    allRoutesXml = getArrivalsXmlByStop(stopCode).getElementsByTagName("Route")
-    for route in allRoutesXml:
-        if route.getAttribute('Name') == selectedRoute:
-            return route
-
-def getArrivalsJsonByStopAndRoute(stopCode, selectedRoute):
-    routeXml = getArrivalsXmlByStopAndRoute(stopCode, selectedRoute)
-    routeName = routeXml.getAttribute('Name')
-    routeName = routeName[:routeName.index('-')]
-    routeDir = routeXml.getElementsByTagName('RouteDirection')[0].getAttribute('Name')
-    stopName = routeXml.getElementsByTagName('Stop')[0].getAttribute('name')
-    arrivals = [str(arrivalTime.childNodes[0].nodeValue) + "m" for arrivalTime in routeXml.getElementsByTagName("DepartureTime")]
-    arrivals = ", ".join(arrivals)
-    return {
-        'routeName': str(routeName),
-        'routeDirection': str(routeDir),
-        'stopName': str(stopName),
-        'arrivals': str(arrivals)
-    }
-
-def buildMuniArrivalsEndpoint(stopCode):
-    return "http://services.my511.org/Transit2.0/GetNextDeparturesByStopCode.aspx?token=" + muniAuthToken + "&stopcode=" + stopCode
+def getTrelloListJson():
+    return urllib2.urlopen(trelloFullUrl).read();

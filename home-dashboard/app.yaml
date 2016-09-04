@@ -15,6 +15,10 @@ handlers:
 - url: /icons
   static_dir: icons
 
+- url: /trello_item.html
+  static_files: trello_item.html
+  upload: trello_item.html
+
 - url: .*
   script: main.app
 

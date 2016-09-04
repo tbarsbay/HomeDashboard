@@ -30,6 +30,8 @@
         <link rel="import" href="bower_components/google-signin/google-signin.html">
         <link rel="import" href="bower_components/google-signin/google-signin-aware.html">
 
+        <link rel="import" href="trello_item.html" id="trello_template">
+
         <title>Home Dashboard</title>
 
         <style is="custom-style">
@@ -134,19 +136,22 @@
             var weatherTemplate = "<div>Current Atlanta weather: {0}<br><img src=\"{1}.png\"></div>";
 
             function initialize() {
-                loadArrivalTimes();
+                // loadArrivalTimes();
                 loadCurrentWeather();
+                loadTrelloList();
             }
 
             function refresh() {
                 showAllLoadingViews();
-                loadArrivalTimes();
+                // loadArrivalTimes();
                 loadCurrentWeather();
+                loadTrelloList();
             }
 
             function showAllLoadingViews() {
-                showLoadingArrivalsView();
+                // showLoadingArrivalsView();
                 showLoadingWeatherView();
+                showLoadingTrelloView();
             }
 
             function showLoadingArrivalsView() {
@@ -155,6 +160,10 @@
 
             function showLoadingWeatherView() {
                 document.getElementById("weather-card-content").innerHTML = "<paper-progress indeterminate id=\"weather-card-progress\"></paper-progress>";
+            }
+
+            function showLoadingTrelloView() {
+                document.getElementById("trello-card-content").innerHTML = "<paper-progress indeterminate id=\"trello-card-progress\"></paper-progress>";
             }
 
             function loadArrivalTimes() {
@@ -181,6 +190,18 @@
                 xmlhttp.send();
             }
 
+            function loadTrelloList() {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                        var trelloData = JSON.parse(xmlhttp.responseText);
+                        renderTrelloList(trelloData);
+                    }
+                }
+                xmlhttp.open("GET", "/trello", true);
+                xmlhttp.send();
+            }
+
             function renderArrivals(arrivals) {
                 var out = "";
                 var i;
@@ -202,6 +223,35 @@
 
                 out += weatherTemplate.format(weatherDescription, iconUrl);
                 document.getElementById("weather-card-content").innerHTML = out;
+            }
+
+            function renderTrelloList(data) {
+                var out = "";
+
+                // Get the card template html
+                var trelloTemplateImport = document.getElementById('trello_template');
+                var cardTemplates = trelloTemplateImport.import;
+                var cardTemplateJustName = cardTemplates.getElementById('trello-list-item');
+
+                // Get the list name
+                var listName = data['name'];
+
+                // Render a template for each card in the list
+                for (i = 0; i < data['cards'].length; i++) {
+                    var card = data['cards'][i];
+                    var name = card['name'];
+                    var labels = card['labels'];
+                    var dueDate = card['due'];
+                    var checklistIds = card['idChecklists'];
+
+                    console.log("Card name: " + name + ". Position: " + i + ".");
+
+                    var cardTemplate = document.importNode(cardTemplateJustName.content, true);
+                    cardTemplate.querySelector('.item-title').innerText = name;
+
+                    // Add the card to the page
+                    document.getElementById('trello-card-content').appendChild(cardTemplate);
+                }
             }
 
             window.addEventListener('WebComponentsReady', function() {
@@ -226,6 +276,13 @@
                     <paper-card class="arrival-time" heading="Transit">
                         <div class="card-content" id="arrival-card-content">
                             <paper-progress indeterminate id="arrival-card-progress"></paper-progress>
+                        </div>
+                    </paper-card>
+                    <br>
+                    <br>
+                    <paper-card class="trello-list" heading="Trello">
+                        <div class="card-content" id="trello-card-content">
+                            <paper-progress indetermine id="trello-card-progress"></paper-progress>
                         </div>
                     </paper-card>
                 </div>
