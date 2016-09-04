@@ -47,10 +47,23 @@ class ArrivalsHandler(webapp2.RequestHandler):
         response.append(route48OutboundJson)
         self.response.out.write(json.dumps(response))
 
+class WeatherHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write(getCurrentAtlantaWeatherJson())
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/arrivals', ArrivalsHandler)
-], debug=True)    
+    ('/arrivals', ArrivalsHandler),
+    ('/weather', WeatherHandler)
+], debug=True)
+
+def getCurrentAtlantaWeatherJson():
+    url = "http://api.openweathermap.org/data/2.5/weather?id=4180439&APPID=7a7167bed31c6a147d7dd7de26c20fe8"
+    # return json.loads(urllib2.urlopen(url).read())
+    return urllib2.urlopen(url).read();
+
+def getCurrentAtlantaWeatherIcon():
+    iconUrl = "http://openweathermap.org/img/w/"
 
 def getArrivalsXmlByStop(stopCode):
     url = buildMuniArrivalsEndpoint(stopCode)

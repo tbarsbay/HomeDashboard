@@ -71,7 +71,7 @@
 
             .route-arrivals-header {
                 font-size: 14px;
-                background-color: #000000;
+                background-color: #EEEEEE;
                 padding-top: 4px;
                 padding-bottom: 4px;
                 padding-left: 4px;
@@ -131,17 +131,30 @@
 
             var routeArrivalsTemplate = "<div><iron-icon class=\"icon-bus\" icon=\"maps:directions-bus\"></iron-icon><span class=\"route-arrivals-header\"><b>{0} - {1}</b></span><br><span class=\"route-arrivals-times\">{2}</span></div>";
 
+            var weatherTemplate = "<div>Current Atlanta weather: {0}<br><img src=\"{1}.png\"></div>";
+
             function initialize() {
                 loadArrivalTimes();
+                loadCurrentWeather();
             }
 
             function refresh() {
-                showLoadingViews();
+                showAllLoadingViews();
                 loadArrivalTimes();
+                loadCurrentWeather();
             }
 
-            function showLoadingViews() {
+            function showAllLoadingViews() {
+                showLoadingArrivalsView();
+                showLoadingWeatherView();
+            }
+
+            function showLoadingArrivalsView() {
                 document.getElementById("arrival-card-content").innerHTML = "<paper-progress indeterminate id=\"arrival-card-progress\"></paper-progress>";
+            }
+
+            function showLoadingWeatherView() {
+                document.getElementById("weather-card-content").innerHTML = "<paper-progress indeterminate id=\"weather-card-progress\"></paper-progress>";
             }
 
             function loadArrivalTimes() {
@@ -156,6 +169,18 @@
                 xmlhttp.send();
             }
 
+            function loadCurrentWeather() {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                        var weather = JSON.parse(xmlhttp.responseText);
+                        renderWeather(weather);
+                    }
+                }
+                xmlhttp.open("GET", "/weather", true);
+                xmlhttp.send();
+            }
+
             function renderArrivals(arrivals) {
                 var out = "";
                 var i;
@@ -163,6 +188,20 @@
                     out += routeArrivalsTemplate.format(arrivals[i].routeName, arrivals[i].stopName, arrivals[i].arrivals) + '<br>';
                 }
                 document.getElementById("arrival-card-content").innerHTML = out;
+            }
+
+            function renderWeather(weather) {
+                var out = "";
+
+                // Get the weather description
+                var weatherDescription = weather['weather'][0]['main'];
+
+                // Get the weather icon
+                var iconId = weather['weather'][0]['icon'];
+                var iconUrl = "http://openweathermap.org/img/w/" + iconId;
+
+                out += weatherTemplate.format(weatherDescription, iconUrl);
+                document.getElementById("weather-card-content").innerHTML = out;
             }
 
             window.addEventListener('WebComponentsReady', function() {
@@ -193,7 +232,9 @@
 
                 <div class="col-md-6">
                     <paper-card class="weather" heading="Weather">
-                        <div class="card-content"></div>
+                        <div class="card-content" id="weather-card-content">
+                            <paper-progress indeterminate id="weather-card-progress"></paper-progress>
+                        </div>
                     </paper-card>
                     <br>
                     <br>
