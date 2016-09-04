@@ -61,7 +61,7 @@ app = webapp2.WSGIApplication([
 
 def getCurrentAtlantaWeatherJson():
     url = "http://api.openweathermap.org/data/2.5/weather?id=4180439&APPID=7a7167bed31c6a147d7dd7de26c20fe8"
-    return urllib2.urlopen(url).read();
+    return urllib2.urlopen(url).read()
 
 def getTrelloListJson():
-    return urllib2.urlopen(trelloFullUrl).read();
+    return urllib2.urlopen(trelloFullUrl).read()

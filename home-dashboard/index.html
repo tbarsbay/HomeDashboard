@@ -12,6 +12,9 @@
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
         <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+
         <!-- Bootstrap -->
         <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -200,11 +203,24 @@
                 xmlhttp.onreadystatechange = function() {
                     if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                         var trelloData = JSON.parse(xmlhttp.responseText);
+                        processTrelloData(trelloData);
                         renderTrelloList(trelloData);
                     }
                 }
                 xmlhttp.open("GET", "/trello", true);
                 xmlhttp.send();
+            }
+
+            function processTrelloData(data) {
+                for (i = 0; i < data.cards.length; i++) {
+                    var card = data.cards[i];
+                    for (j = 0; j < card.labels.length; j++) {
+                        var label = card.labels[j];
+                        if (label.name === "Complete") {
+                            card.complete = true;
+                        }
+                    }
+                }
             }
 
             function renderArrivals(arrivals) {
@@ -231,30 +247,13 @@
             }
 
             function renderTrelloList(data) {
-                var out = "";
+                $.get("trello_item.html", function(temp, textStatus, XMLHttpRequest) {
+                    var markup = temp;
+                    $.template("cardTemplate", markup);
+                    $.tmpl("cardTemplate", data.cards).appendTo("#trello-card-content");
+                });
 
-                // Get the card template html
-                var trelloTemplateImport = document.getElementById('trello_template');
-                var cardTemplates = trelloTemplateImport.import;
-                var cardTemplateJustName = cardTemplates.getElementById('trello-list-item');
-
-                // Get the list name
-                var listName = data.name;
-
-                // Render a template for each card in the list
-                for (i = 0; i < data.cards.length; i++) {
-                    var card = data.cards[i];
-                    var name = card.name;
-                    var labels = card.label;
-                    var dueDate = card.due;
-                    var checklistIds = card.idChecklists;
-
-                    var cardTemplate = document.importNode(cardTemplateJustName.content, true);
-                    cardTemplate.querySelector('.trello-item paper-checkbox').innerText = name;
-
-                    // Add the card to the page
-                    document.getElementById('trello-card-content').appendChild(cardTemplate);
-                }
+                $("#trello-card-progress").hide();
             }
 
             window.addEventListener('WebComponentsReady', function() {

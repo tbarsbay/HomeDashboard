@@ -1,5 +1,7 @@
-<template id="trello-list-item">
-    <div class="trello-item">
-        <paper-checkbox class="trello-item-title" label="Labeltest"></paper-checkbox>
-    </div>
-</template>
+<div class="trello-item">
+    {{if complete}}
+        <paper-checkbox class="trello-item-title" checked>${name}</paper-checkbox>
+    {{else}}
+        <paper-checkbox class="trello-item-title">${name}</paper-checkbox>
+    {{/if}}
+</div>
