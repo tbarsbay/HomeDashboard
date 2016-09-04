@@ -1,7 +1,13 @@
 <div class="trello-item">
-    {{if complete}}
-        <paper-checkbox class="trello-item-title" checked>${name}</paper-checkbox>
-    {{else}}
-        <paper-checkbox class="trello-item-title">${name}</paper-checkbox>
-    {{/if}}
+    <paper-card>
+        <div class="card-content">
+            {{if complete}}
+                <span class="trello-card-label trello-card-label-complete"></span><br>
+            {{else in_progress}}
+                <span class="trello-card-label trello-card-label-in-progress"></span><br>
+            {{else}}
+            {{/if}}
+            ${name}
+        </div>
+    </paper-card>
 </div>

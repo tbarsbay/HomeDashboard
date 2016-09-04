@@ -120,8 +120,28 @@
                 font-size: 16px;
             }
 
-            .trello-item-title {
-                /*font-size: 20px;*/
+            .trello-list {
+                --paper-card-background-color: #00AECC;
+                --paper-card-header-color: #FFFFFF;
+            }
+
+            .trello-item paper-card {
+                margin-bottom: 16px;
+            }
+
+            .trello-card-label {
+                float: left;
+                width: 45px;
+                height: 9px;
+                border-radius: 3px;
+            }
+
+            .trello-card-label-in-progress {
+                background-color: #00C2E0;
+            }
+
+            .trello-card-label-complete {
+                background-color: #61BD4F;
             }
         </style>
 
@@ -218,6 +238,8 @@
                         var label = card.labels[j];
                         if (label.name === "Complete") {
                             card.complete = true;
+                        } else if (label.name === "In Progress") {
+                            card.in_progress = true;
                         }
                     }
                 }
